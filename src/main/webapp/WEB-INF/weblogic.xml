@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wls:weblogic-web-app xmlns:wls="http://xmlns.oracle.com/weblogic/weblogic-web-app"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xsi:schemaLocation="http://xmlns.oracle.com/weblogic/weblogic-web-app http://xmlns.oracle.com/weblogic/weblogic-web-app/1.7/weblogic-web-app.xsd">
+  <wls:container-descriptor>
+    <wls:show-archived-real-path-enabled>true</wls:show-archived-real-path-enabled>
+    <wls:prefer-web-inf-classes>true</wls:prefer-web-inf-classes>
+    <!--<wls:prefer-application-packages>-->
+    <!--<package-name>org.slf4j.*</package-name>-->
+    <!--<package-name>ch.qos.*</package-name>-->
+    <!--<package-name>com.google.*</package-name>-->
+    <!--</wls:prefer-application-packages>-->
+    <!--<wls:prefer-application-resources>-->
+    <!--<resource-name>org.slf4j.*</resource-name>-->
+    <!--<resource-name>ch.qos.*</resource-name>-->
+    <!--<resource-name>com.google.*</resource-name>-->
+    <!--</wls:prefer-application-resources>-->
+    <!--<wls:resource-reload-check-secs>0</wls:resource-reload-check-secs>-->
+  </wls:container-descriptor>
+</wls:weblogic-web-app>

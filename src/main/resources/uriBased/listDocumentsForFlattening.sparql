@@ -1,0 +1,58 @@
+# Selects every document that corresponds to the given conceptScheme
+select distinct ?uri ?preferredLabel ?text ?broader {
+    graph <$_0> {
+        {
+          ?uri <http://www.w3.org/2004/02/skos/core#inScheme> <$_1> .
+        }
+        UNION
+        {
+          ?uri <http://www.w3.org/2004/02/skos/core#inScheme> ?scheme .
+          VALUES ?structureRelation {<http://data.europa.eu/esco/model#structureFor> <http://data.europa.eu/esco/model#codeList>}
+          <$_1> ?structureRelation ?scheme .
+        }
+
+        OPTIONAL {
+            ?uri <http://www.w3.org/2004/02/skos/core#broader> ?broader .
+        }
+
+       # All the text that will be indexed, concatenated.
+       {
+           select distinct ?uri (group_concat(distinct ?indexable;separator=" ") as ?text)
+           where {
+                       {
+                           ?uri <http://www.w3.org/2008/05/skos-xl#prefLabel> ?pivotA .
+                           ?pivotA <http://www.w3.org/2008/05/skos-xl#literalForm> ?indexable .
+                       }
+                       UNION
+                       {
+                           ?uri <http://purl.org/dc/terms/description> ?indexable .
+                       }
+                        UNION
+                       {
+                           ?uri  <http://www.w3.org/2004/02/skos/core#definition> ?indexable .
+                       }
+                       UNION
+                       {
+                           ?uri <http://www.w3.org/2008/05/skos-xl#hiddenLabel>  ?pivotB .
+                           ?pivotB <http://www.w3.org/2008/05/skos-xl#literalForm> ?indexable .
+                       }
+                       UNION
+                       {
+                           ?uri <http://www.w3.org/2008/05/skos-xl#altLabel> ?pivotC .
+                           ?pivotC <http://www.w3.org/2008/05/skos-xl#literalForm> ?indexable .
+                       }
+                       UNION
+                       {
+                           ?uri  <http://data.europa.eu/esco/model#editorialStatus> ?indexable .
+                       }
+                       FILTER (lang(?indexable) = '$_2') .
+           }  group by ?uri
+        }
+
+        # We only index concepts with a preferred label.
+        ?uri <http://www.w3.org/2008/05/skos-xl#prefLabel> ?preferredLabelUri .
+        ?preferredLabelUri <http://www.w3.org/2008/05/skos-xl#literalForm> ?preferredLabel .
+
+        FILTER (lang(?preferredLabel) = '$_2') .
+    }
+}

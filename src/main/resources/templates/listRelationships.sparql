@@ -1,0 +1,27 @@
+# Example match
+#
+#<http://data.europa.eu/esco/relations/CTC_159536_19120> <http://data.europa.eu/esco/model#isRelationshipFor> <http://data.europa.eu/esco/occupation/3c1bada1-6ea5-4a53-8943-49a2dab101c6> ;
+#                                                         <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://data.europa.eu/esco/model#Relationship> ;
+#                                                         <http://data.europa.eu/esco/model#hasRelationshipType> <http://data.europa.eu/esco/RelationshipType#iC.optionalSkill> ;
+#                                                         <http://data.europa.eu/esco/model#refersConcept> <http://data.europa.eu/esco/skill/ebc45f07-d12d-4b50-a0a5-bb24633b085f> .
+
+
+select ?sourceURI ?relationShipType ?targetUri {
+    {  graph <$_0>
+        {
+              ?relationshipURI <http://data.europa.eu/esco/model#isRelationshipFor> ?sourceURI .
+              ?sourceURI <http://www.w3.org/2004/02/skos/core#inScheme> ?sourceScheme .
+
+              ?relationshipURI <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>        <http://data.europa.eu/esco/model#Relationship> .
+              ?relationshipURI <http://data.europa.eu/esco/model#hasRelationshipType>   ?relationShipType .
+
+              ?relationshipURI <http://data.europa.eu/esco/model#refersConcept>         ?targetUri .
+              ?targetUri <http://www.w3.org/2004/02/skos/core#inScheme> ?targetScheme .
+
+
+              FILTER ( ?sourceScheme = <$_1> ) .
+              FILTER ( ?targetScheme = <$_2> ) .
+
+        }
+    }
+}

@@ -1,0 +1,41 @@
+# Selects every conceptScheme in the database
+select distinct ?conceptScheme ?conceptSchemeUri (count(DISTINCT ?uri) as ?tripleCount) (count(DISTINCT ?prefLabelUri) as ?indexableDocumentsCount) {
+    graph ?graph {
+        {
+          ?uri <http://www.w3.org/2004/02/skos/core#inScheme> ?conceptSchemeUri .
+          ?conceptSchemeUri <http://mu.semte.ch/vocabularies/core/uuid> ?conceptScheme .
+
+          OPTIONAL {
+              ?uri <http://www.w3.org/2008/05/skos-xl#prefLabel> ?prefLabelUri .
+              ?prefLabelUri <http://www.w3.org/2008/05/skos-xl#literalForm> ?title .
+              BIND (lang(?title) as ?lang) .
+          }
+        }
+        UNION
+        {
+          ?conceptSchemeUri a <http://data.europa.eu/esco/model#Structure> .
+          ?conceptSchemeUri <http://mu.semte.ch/vocabularies/core/uuid> ?conceptScheme .
+
+          OPTIONAL {
+              ?conceptSchemeUri <http://data.europa.eu/esco/model#structureFor> ?structureFor .
+              ?conceptSchemeUri <http://data.europa.eu/esco/model#codeList> ?codeList .
+
+              {
+                {
+                  ?uri <http://www.w3.org/2004/02/skos/core#inScheme> ?structureFor .
+                }
+                UNION
+                {
+                  ?uri <http://www.w3.org/2004/02/skos/core#inScheme> ?codeList .
+                }
+              }
+
+              ?uri <http://www.w3.org/2008/05/skos-xl#prefLabel> ?prefLabelUri .
+              ?prefLabelUri <http://www.w3.org/2008/05/skos-xl#literalForm> ?title .
+              BIND (lang(?title) as ?lang) .
+          }
+        }
+    }
+    FILTER (?graph = <$_0>).
+    FILTER isIRI(?graph)
+} group by ?conceptScheme ?conceptSchemeUri order by DESC(?tripleCount)

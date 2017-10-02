@@ -1,0 +1,29 @@
+# Given a set of uris that changed (incomingUri), we need to figure out which documents needs to be indexed.
+#
+# Known cases
+#
+# (1) incomingUri is a concept uri. Concepts have a prefLabel. The concept needs to be reindexed.
+# (2) incomingUri is a label uri. All concepts that use the label need to be reindexed.
+
+select distinct ?uri {
+    graph <$_0> {
+
+        # Expansion which restricts the incomingUri set
+        FILTER (?incomingUri IN ( $_1 )) .
+
+        # The candidates for indexing are documents, which have at least have a preferred label, which satisfy (1) and (2)
+        {
+            # case (1)
+            {
+                ?incomingUri <http://www.w3.org/2008/05/skos-xl#prefLabel> ?label .
+                BIND(?incomingUri as ?uri) .
+            }
+            # case (2)
+            UNION
+            {
+                ?incomingUri a <http://www.w3.org/2008/05/skos-xl#Label> .
+                ?uri ?p ?incomingUri .
+            }
+        }
+    }
+}

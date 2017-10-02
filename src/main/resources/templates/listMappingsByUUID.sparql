@@ -1,0 +1,17 @@
+select distinct ?sourceURI ?matchType ?targetURI {
+    {  graph <$_0>
+        {
+            ?mappingURI a <http://sem.tenforce.com/vocabularies/mapping-platform/Mapping> .
+
+            ?mappingURI <http://sem.tenforce.com/vocabularies/mapping-platform/mapsFrom> ?sourceURI .
+            ?sourceURI <http://www.w3.org/2004/02/skos/core#inScheme> ?sourceScheme .
+            ?sourceScheme <http://mu.semte.ch/vocabularies/core/uuid> "$_1" .
+
+            ?mappingURI <http://sem.tenforce.com/vocabularies/mapping-platform/mapsTo> ?targetURI .
+            ?targetURI <http://www.w3.org/2004/02/skos/core#inScheme> ?targetScheme .
+            ?targetScheme <http://mu.semte.ch/vocabularies/core/uuid> "$_2" .
+
+            ?mappingURI <http://sem.tenforce.com/vocabularies/mapping-platform/matchType> ?matchType .
+        }
+    }
+}

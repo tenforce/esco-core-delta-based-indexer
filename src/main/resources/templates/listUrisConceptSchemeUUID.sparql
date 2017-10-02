@@ -1,0 +1,17 @@
+# Selects every uri that corresponds to the given conceptScheme
+select distinct ?uri {
+    graph <$_0> {
+        ?conceptSchemeUri <http://mu.semte.ch/vocabularies/core/uuid> "$_1" .
+        {
+          ?uri <http://www.w3.org/2004/02/skos/core#inScheme> ?conceptSchemeUri .
+        }
+        UNION
+        {
+          VALUES ?structureRelation {<http://data.europa.eu/esco/model#structureFor> <http://data.europa.eu/esco/model#codeList>}
+          ?conceptSchemeUri ?structureRelation ?scheme .
+          ?uri <http://www.w3.org/2004/02/skos/core#inScheme> ?scheme .
+        }
+        ?uri <http://www.w3.org/2008/05/skos-xl#prefLabel> ?superLabelURI .
+        ?superLabelURI <http://www.w3.org/2008/05/skos-xl#literalForm> ?preferredLabel .
+    }
+}

@@ -1,0 +1,55 @@
+select distinct ?uri ?uuid ?preferredLabel ?labels ?text ?conceptSchemes ?isMappable ?skillType {
+    graph <$_0> {
+        # conceptSchemes, bound in var 'conceptSchemes'
+        {
+            select distinct ?uri (group_concat(distinct ?currentConceptScheme;separator=",") as ?conceptSchemes)
+            where {
+                {
+                  ?uri <http://www.w3.org/2004/02/skos/core#inScheme> ?currentConceptSchemeUri .
+                }
+                UNION
+                {
+                  VALUES ?structureRelation {<http://data.europa.eu/esco/model#structureFor> <http://data.europa.eu/esco/model#codeList>}
+                  ?currentConceptSchemeUri ?structureRelation ?scheme .
+                  ?uri <http://www.w3.org/2004/02/skos/core#inScheme> ?scheme .
+                }
+                ?currentConceptSchemeUri <http://mu.semte.ch/vocabularies/core/uuid> ?currentConceptScheme .
+            } group by ?uri
+        }
+
+        # Will expand to a set of URIs (or the current filter criteria)
+        FILTER ( ?uri IN ( $_1 ) ) .
+
+        # All the labels that will be indexed, concatenated.
+        {
+            select distinct ?uri (group_concat(distinct ?indexable;separator=",") as ?labels)
+            where {
+                ?uri ?hasLabel ?pivotA .
+                #   ?pivotA a <http://www.w3.org/2008/05/skos-xl#Label> .
+                ?pivotA <http://www.w3.org/2008/05/skos-xl#literalForm> ?indexable .
+
+                FILTER (lang(?indexable) = '$_2') .
+            }  group by ?uri
+        }
+
+        # Full description text (for now, only ever given in English)
+        OPTIONAL {?uri <http://purl.org/dc/terms/description> ?text.
+        FILTER (lang(?text) = '$_2') .}
+
+        # We only index the concepts with a preferred label.
+        ?uri <http://www.w3.org/2008/05/skos-xl#prefLabel> ?preferredLabelUri .
+        ?preferredLabelUri <http://www.w3.org/2008/05/skos-xl#literalForm> ?preferredLabel .
+        FILTER (lang(?preferredLabel) = '$_2') .
+
+        # The concept's uuid
+        ?uri <http://mu.semte.ch/vocabularies/core/uuid> ?uuid .
+
+        OPTIONAL {?uri <http://sem.tenforce.com/vocabularies/mapping-platform/isMappable> ?isMappable} .
+
+        OPTIONAL {?uri <http://data.europa.eu/esco/model#skillType> ?skillType} .
+
+        FILTER NOT EXISTS {?uri <http://mu.semte.ch/vocabularies/core/isUnderCreation> "true"}
+
+    }
+
+}

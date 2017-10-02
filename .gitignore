@@ -1,0 +1,13 @@
+*~
+*#
+data
+gitignore/*
+.idea
+*.iml
+.idea_modules
+target
+architecture
+results
+data*
+*.ttl
+*.log
