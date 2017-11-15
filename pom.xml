@@ -178,13 +178,6 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- DB-support -->
-		<dependency>
-			<groupId>mu-semtech</groupId>
-			<artifactId>db-support</artifactId>
-			<version>0.3-SNAPSHOT</version>
-		</dependency>
-
 		<!-- For traditional deployment -->
 		<!-- http://docs.spring.io/spring-boot/docs/current/reference/html/howto-traditional-deployment.html -->
 		<dependency>

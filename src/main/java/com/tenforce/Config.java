@@ -1,8 +1,8 @@
 package com.tenforce;
 
-import com.tenforce.mu_semtech.db_support.DbConfig;
-import com.tenforce.mu_semtech.db_support.DbSupport;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.http.HTTPRepository;
@@ -26,6 +26,7 @@ import java.util.Arrays;
 @PropertySource(Application.CONFIG_PLACEHOLDER)
 public class Config extends WebMvcConfigurerAdapter {
 
+    private static final Logger log = LoggerFactory.getLogger(Config.class);
 
     @Value("${sparql.virtuoso.endpoint}")
     public String virtuosoEndpoint;
@@ -39,29 +40,14 @@ public class Config extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public Repository getSparqlRepository(DbConfig dbConfig) throws RepositoryException {
-        if (dbConfig == null){
-            return new SPARQLRepository(virtuosoEndpoint);
-        }
-//      Uses out European commission Config.
-        if (StringUtils.isEmpty(dbConfig.getId())) {
-            return new SPARQLRepository(dbConfig.getUrl());
-        }
-        else {
-            HTTPRepository repo = new HTTPRepository(dbConfig.getUrl(), dbConfig.getId());
-            repo.setUsernameAndPassword(dbConfig.getUser(),dbConfig.getPassword());
-            return repo;
-        }
-    }
-
-    @Bean
-    public DbConfig getDBConfig() {
-      try {
-        return new DbSupport().getDbConfig("mu_semtech_id");
-      }
-      catch (RuntimeException ex){
-        return null;
-      }
+    public Repository getSparqlRepository() throws RepositoryException {
+        String sparqlEndpoint = System.getenv("SPARQL_ENDPOINT");
+        if (StringUtils.isNotBlank(sparqlEndpoint)) {
+          log.info("using sparql endpoint {} from environment", sparqlEndpoint);
+					return new SPARQLRepository(sparqlEndpoint);
+				}
+				else
+  				return new SPARQLRepository(virtuosoEndpoint);
     }
 
 }
