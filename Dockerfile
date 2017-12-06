@@ -1,6 +1,5 @@
 FROM maven:3.2.5-jdk-7
 
-ADD settings.xml /root/.m2/settings.xml
 ADD . /data/
 
 WORKDIR /data
