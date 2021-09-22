@@ -1,4 +1,4 @@
-FROM maven:3.2.5-jdk-7
+FROM maven:3.2.5-jdk-8
 
 ADD . /data/
 
